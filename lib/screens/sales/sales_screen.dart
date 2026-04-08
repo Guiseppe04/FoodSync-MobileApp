@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
+import '../../widgets/app_layout.dart';
 import '../../widgets/sales_card.dart';
 import '../../widgets/sales_chart_bar.dart';
 import '../../widgets/sales_transaction_item.dart';
-import '../../widgets/bottom_nav.dart';
 
 class SalesScreen extends StatelessWidget {
   const SalesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
+    return AppLayout(
+      title: "Sales Monitoring",
 
-      appBar: AppBar(title: const Text("Sales Monitoring")),
+      currentIndex: 2, // 🔥 sales tab
+
+      onNavTap: (i) {
+        final routes = [
+          '/home',
+          '/inventory',
+          '/sales',
+          '/logistics',
+          '/analytics',
+          '/settings',
+        ];
+
+        if (ModalRoute.of(context)?.settings.name == routes[i]) return;
+
+        Navigator.pushReplacementNamed(context, routes[i]);
+      },
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -66,14 +81,6 @@ class SalesScreen extends StatelessWidget {
             ),
           ],
         ),
-      ),
-
-      bottomNavigationBar: BottomNav(
-        index: 2,
-        onTap: (i) {
-          final routes = ['/home', '/inventory', '/sales', '/logistics'];
-          Navigator.pushReplacementNamed(context, routes[i]);
-        },
       ),
     );
   }

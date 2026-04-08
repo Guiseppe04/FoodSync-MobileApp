@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../widgets/app_layout.dart';
 import '../../widgets/inventory_item.dart';
 import '../../widgets/inventory_stats.dart';
 import '../../widgets/inventory_filter.dart';
-import '../../widgets/bottom_nav.dart';
 
 class InventoryScreen extends StatefulWidget {
   const InventoryScreen({super.key});
@@ -12,8 +12,6 @@ class InventoryScreen extends StatefulWidget {
 }
 
 class _InventoryScreenState extends State<InventoryScreen> {
-  int currentIndex = 1;
-
   String searchText = "";
 
   final List<Map<String, dynamic>> items = [
@@ -69,7 +67,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 🔍 FILTER LOGIC
     final filteredItems = items.where((item) {
       final name = item["name"].toLowerCase();
       final sku = item["sku"].toLowerCase();
@@ -78,10 +75,25 @@ class _InventoryScreenState extends State<InventoryScreen> {
       return name.contains(query) || sku.contains(query);
     }).toList();
 
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
+    return AppLayout(
+      title: "Inventory Management",
 
-      appBar: AppBar(title: const Text("Inventory Management")),
+      currentIndex: 1, // 🔥 inventory tab
+
+      onNavTap: (i) {
+        final routes = [
+          '/home',
+          '/inventory',
+          '/sales',
+          '/logistics',
+          '/analytics',
+          '/settings',
+        ];
+
+        if (ModalRoute.of(context)?.settings.name == routes[i]) return;
+
+        Navigator.pushReplacementNamed(context, routes[i]);
+      },
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -101,7 +113,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
             const SizedBox(height: 20),
 
-            // 🔥 LIST
             Column(
               children: filteredItems.map((item) {
                 return InventoryItem(
@@ -116,20 +127,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
           ],
         ),
-      ),
-
-      bottomNavigationBar: BottomNav(
-        index: currentIndex,
-        onTap: (i) {
-          final routes = [
-            '/home',
-            '/inventory',
-            '/sales',
-            '/logistics',
-            '/analytics',
-          ];
-          Navigator.pushReplacementNamed(context, routes[i]);
-        },
       ),
     );
   }

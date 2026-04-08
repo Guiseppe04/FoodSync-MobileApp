@@ -4,7 +4,7 @@ import '../../widgets/payment_chart.dart';
 import '../../widgets/transaction_item.dart';
 import '../../widgets/stock_alert_item.dart';
 import '../../widgets/sales_chart.dart';
-import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_layout.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,10 +18,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
+    return AppLayout(
+      title: "Food Sync",
+      currentIndex: 0,
 
-      appBar: AppBar(title: const Text("RetailHub")),
+      onNavTap: (i) {
+        final routes = [
+          '/home',
+          '/inventory', 
+          '/sales',
+          '/logistics',
+          '/analytics',
+          '/settings',
+        ];
+
+        if (ModalRoute.of(context)?.settings.name == routes[i]) return;
+
+        Navigator.pushReplacementNamed(context, routes[i]);
+      },
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -121,19 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      bottomNavigationBar: BottomNav(
-        index: 0,
-        onTap: (i) {
-          final routes = [
-            '/home',
-            '/inventory',
-            '/sales',
-            '/logistics',
-            '/analytics',
-          ];
-          Navigator.pushReplacementNamed(context, routes[i]);
-        },
-      ),
+    
     );
   }
 }

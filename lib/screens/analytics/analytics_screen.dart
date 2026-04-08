@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_layout.dart';
 import '../../widgets/charts/line_chart_widget.dart';
 import '../../widgets/charts/bar_chart_widget.dart';
 import '../../widgets/charts/pie_chart_widget.dart';
@@ -17,8 +17,25 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Analytics Dashboard")),
+    return AppLayout(
+      title: "Analytics Dashboard",
+
+      currentIndex: 4, // 🔥 analytics index
+
+      onNavTap: (i) {
+        final routes = [
+          '/home',
+          '/inventory',
+          '/sales',
+          '/logistics',
+          '/analytics',
+          '/settings',
+        ];
+
+        if (ModalRoute.of(context)?.settings.name == routes[i]) return;
+
+        Navigator.pushReplacementNamed(context, routes[i]);
+      },
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -43,26 +60,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             ] else if (selectedTab == 1) ...[
               const BarChartWidget(),
             ] else ...[
-              const CustomerChartWidget(), // 👈 DITO PAPASOK
+              const CustomerChartWidget(),
             ],
           ],
         ),
-      ),
-
-      bottomNavigationBar: BottomNav(
-        index: 4,
-        onTap: (i) {
-          final routes = [
-            '/home',
-            '/inventory',
-            '/sales',
-            '/logistics',
-            '/analytics',
-          ];
-          if (i != 4) {
-            Navigator.pushReplacementNamed(context, routes[i]);
-          }
-        },
       ),
     );
   }

@@ -12,7 +12,12 @@ class BottomNav extends StatelessWidget {
       currentIndex: index,
       onTap: onTap,
       type: BottomNavigationBarType.fixed,
+
+      backgroundColor: Colors.white, 
       selectedItemColor: Colors.blue,
+      unselectedItemColor: Colors.grey, 
+
+      elevation: 10, 
 
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
