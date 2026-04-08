@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import '../../services/api_service.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -8,10 +8,14 @@ class AuthScreen extends StatefulWidget {
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
-TextEditingController emailController = TextEditingController();
-TextEditingController passwordController = TextEditingController();
+
 
 class _AuthScreenState extends State<AuthScreen> {
+  bool isValidEmail(String email) {
+  final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+  return emailRegex.hasMatch(email);
+}
+  
   bool isLogin = true;
   bool obscure1 = true;
   bool obscure2 = true;
@@ -67,15 +71,70 @@ class _AuthScreenState extends State<AuthScreen> {
             
               // BUTTON
               GestureDetector(
-                onTap: () {
-                  String email = emailController.text;
-                  String password = passwordController.text;
+                onTap: () async {
+                  String email = emailController.text.trim();
+                  String password = passwordController.text.trim();
 
-                  if (email == "1" && password == "2") {
-                    Navigator.pushReplacementNamed(context, '/home');
-                  } else {
+                  if (email.isEmpty || password.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Invalid credentials")),
+                      const SnackBar(content: Text("Please fill all fields")),
+                    );
+                    return;
+                  }
+
+                  if (!isLogin) {
+                    if (!isValidEmail(email)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Invalid email format")),
+                      );
+                      return;
+                    }
+
+                    if (password.length < 6) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Password must be at least 6 characters")),
+                      );
+                      return;
+                    }
+                  }
+
+                  final messenger = ScaffoldMessenger.of(context);
+                  bool success = false;
+
+                  if (isLogin) {
+                    success = await ApiService.login(email, password);
+                  } else {
+                    success = await ApiService.register(email, password);
+                  }
+
+                  if (!mounted) return;
+
+                  if (success) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(isLogin ? "Logged in successfully" : "Account created!"),
+                      ),
+                    );
+
+                    emailController.clear();
+                    passwordController.clear();
+
+                    if (isLogin) {
+                      // Navigate to home after login
+                      Navigator.pushReplacementNamed(context, '/home');
+                    } else {
+                      // Switch to login mode after register
+                      setState(() {
+                        isLogin = true;
+                      });
+                    }
+                  } else {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(isLogin
+                            ? "Invalid email or password"
+                            : "Registration failed, please try again"),
+                      ),
                     );
                   }
                 },
